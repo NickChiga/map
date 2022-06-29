@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Инструкции ОАМР</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="description" content="Description">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.css" rel="stylesheet">
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    window.$docsify = {
+      name: '<a id="logo-link" data-nosearch href="/">' +
+              '<div style="display: flex; flex-direction: row; align-items: center; justify-content: center">' +
+              '<img src="assets/logo-color.svg" height="60px" alt="logo">' +
+              '</div></a>',
+      nameLink: false,
+      relativePath: true,
+      auto2top: true,
+      repo: '',
+      loadFooter: true,
+      loadSidebar: true,
+      maxLevel: 4,
+      subMaxLevel: 3,
+      themeColor: '#23822e',
+    }
+  </script>
+  <!-- Docsify v4 -->
+  <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/emoji.min.js"></script>
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.js"></script>
+  <script>
+    let plugin = (hook, vm) => {
+      mapboxgl.accessToken = 'pk.eyJ1IjoiY2hpZ2EiLCJhIjoiY2tqYnRyN2NzN3B4ZTJxcWpvdmVldGdmYSJ9.mTIH5Hby4yDyU-LLFOY0Fw';
+      let maps = [];
+
+      hook.afterEach(function (html, next) {
+        maps.splice(0, maps.length);
+        var htmlElement = document.createElement('div');
+        htmlElement.innerHTML = html;
+
+        htmlElement.querySelectorAll('pre[data-lang=mapbox]').forEach((element) => {
+          var replacement = document.createElement('div');
+          let json = JSON.parse(element.textContent);
+          maps.push(json);
+          replacement.setAttribute('id', json.map.container);
+
+          // Replace
+          element.parentNode.replaceChild(replacement, element);
+        });
+
+        next(htmlElement.innerHTML);
+      });
+
+      hook.doneEach(function () {
+        maps.forEach((json) => {
+          const map = new mapboxgl.Map(json.map);
+          // map.on('load', () => {
+          //   map.setLayoutProperty('country-label', 'text-field', [
+          //     'get',
+          //     `name_${json.map.language}`
+          //   ]);
+          // });
+          const ro = new ResizeObserver(() => {
+            map.resize();
+          });
+          const element = document.getElementById(json.map.container);
+          ro.observe(element)
+          json.markers.forEach((markerData) => {
+            const marker = new mapboxgl.Marker()
+                    .setLngLat(markerData)
+                    .addTo(map);
+          })
+        })
+      });
+    };
+
+    if (!window.$docsify) {
+      window.$docsify = {}
+    }
+
+    window.$docsify.plugins = (window.$docsify.plugins || []).concat(plugin)
+  </script>
+  <style>
+    .mapboxgl-map { height: 600px; width: 100% }
+  </style>
+</body>
+</html>

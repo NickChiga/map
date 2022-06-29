@@ -1,0 +1,16 @@
+# Главная страница
+
+```mapbox
+{
+    "map": {
+        "container": "map",
+        "style": "mapbox://styles/mapbox/streets-v11",
+        "center": [12.550343, 55.665957],
+        "zoom": 9
+    },
+    "markers": [
+        [12.554729, 55.70651],
+        [12.554729, 55.705]
+    ]
+}
+```
