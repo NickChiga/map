@@ -59,22 +59,39 @@
       hook.doneEach(function () {
         maps.forEach((json) => {
           const map = new mapboxgl.Map(json.map);
-          // map.on('load', () => {
-          //   map.setLayoutProperty('country-label', 'text-field', [
-          //     'get',
-          //     `name_${json.map.language}`
-          //   ]);
-          // });
+          map.on('load', () => {
+            json.layers.forEach((layer) => {
+              map.addLayer(layer);
+
+              map.on('click', layer.id, (e) => {
+
+                const coordinates = e.features[0].geometry.coordinates.slice();
+                const description = e.features[0].properties.description;
+
+                while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                  coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                }
+
+                new mapboxgl.Popup()
+                        .setLngLat(coordinates)
+                        .setHTML(description)
+                        .addTo(map);
+              });
+
+              map.on('mouseenter', layer.id, () => {
+                map.getCanvas().style.cursor = 'pointer';
+              });
+
+              map.on('mouseleave', layer.id, () => {
+                map.getCanvas().style.cursor = '';
+              });
+            })
+          });
           const ro = new ResizeObserver(() => {
             map.resize();
           });
           const element = document.getElementById(json.map.container);
           ro.observe(element)
-          json.markers.forEach((markerData) => {
-            const marker = new mapboxgl.Marker()
-                    .setLngLat(markerData)
-                    .addTo(map);
-          })
         })
       });
     };
