@@ -16,7 +16,8 @@
     "container": "map",
     "style": "mapbox://styles/mapbox/light-v10",
     "center": [-77.04, 38.907],
-    "zoom": 12
+    "zoom": 12,
+    "cooperativeGestures": false
   },
   "layers": [
     {

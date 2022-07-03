@@ -59,6 +59,7 @@
       hook.doneEach(function () {
         maps.forEach((json) => {
           const map = new mapboxgl.Map(json.map);
+          map.addControl(new mapboxgl.NavigationControl());
           map.on('load', () => {
             json.layers.forEach((layer) => {
               map.addLayer(layer);
